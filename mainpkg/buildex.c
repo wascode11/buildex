@@ -1,13 +1,17 @@
-#include "findfiles.c"
+#include "buildex.h"
 
 int main() {
-    const char* path = "."; // Specify the directory path with wildcard
-    char* fout[100]; // Array to store found file paths
+    const char* path = ".";
+    char* fout[100];
     FindAllFiles(path, fout, 0);
-    for (int i = 0; i < 100; i++) {
-        printf("debug\n");
-        printf("Found file: %s\n", fout[i]);
+    for (int i = 0; i < 100 && fout[i] != NULL; i++) {
+        char* target = remhead(fout[i], 2);
+        char* cmd = (char*)malloc(100);
+        snprintf(cmd, 100, "cl /c /EHsc /Fo:build\\ %s", target);
+        printf("Compiling: %s\n", cmd);
+        system(cmd);
+        free(cmd);
     }
-    free(fout);
+    system("link /OUT:build\\buildex.exe build\\*.obj");
     return 0;
 }
